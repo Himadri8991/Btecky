@@ -1,0 +1,50 @@
+import RPi.GPIO as GPIO
+import time
+
+# Set GPIO mode to BCM
+GPIO.setmode(GPIO.BCM)
+
+# Set GPIO pins for the ultrasonic sensor
+TRIG = 18
+ECHO = 23
+
+# Set the TRIG pin as output and the ECHO pin as input
+GPIO.setup(TRIG, GPIO.OUT)
+GPIO.setup(ECHO, GPIO.IN)
+
+# Define a function to measure the distance to an object
+def measure_distance():
+    # Send a pulse to the TRIG pin
+    GPIO.output(TRIG, GPIO.HIGH)
+    time.sleep(0.00001)
+    GPIO.output(TRIG, GPIO.LOW)
+
+    # Start a timer to measure the time it takes for the pulse to echo back
+    start_time = time.time()
+
+    # Wait for the ECHO pin to go high
+    while GPIO.input(ECHO) == GPIO.LOW:
+        pass
+
+    # Stop the timer when the ECHO pin goes high
+    stop_time = time.time()
+
+    # Calculate the time it took for the pulse to echo back
+    pulse_duration = stop_time - start_time
+
+    # Calculate the distance to the object using the speed of sound
+    distance = pulse_duration * 17150
+
+    return distance
+
+# Create a loop to continuously measure the distance to an object
+while True:
+
+    # Measure the distance to the object
+    distance = measure_distance()
+
+    # Print the distance to the console
+    print("Distance to object:", distance, "cm")
+
+    # Wait for 1 second before measuring the distance again
+    time.sleep(1)
